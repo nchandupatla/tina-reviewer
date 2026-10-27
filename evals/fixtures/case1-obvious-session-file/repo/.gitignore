@@ -1,0 +1,12 @@
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Session transcripts from everyday use. Bench runs in bench/runs/ ARE committed as receipts.
+/runs/
+
+# Node / OS noise
+node_modules/
+.DS_Store
+*.log

@@ -7,6 +7,7 @@ import { z } from "zod";
 const SHA = /^[0-9a-f]{40}$/i;
 
 const finding = z.object({
+  rule: z.number().int().positive().describe("Number of the LESSONS.md rule this change breaks."),
   severity: z.enum(["high", "medium", "low"]),
   file: z.string().min(1).max(240),
   line: z.number().int().positive(),
@@ -18,9 +19,9 @@ type Finding = z.infer<typeof finding>;
 
 export default defineTool({
   description:
-    "Post the security review on this session's pull request. Call once. Empty findings = CLEAN.",
+    "Post the rules review on this session's pull request. Call once. Empty findings = CLEAN.",
   inputSchema: z.object({
-    findings: z.array(finding).describe("Exploitable issues. Empty for CLEAN."),
+    findings: z.array(finding).describe("Changes that break a LESSONS.md rule. Empty for CLEAN."),
   }),
   async execute({ findings }, ctx) {
     if (ctx.session.purpose === "eval") {
@@ -57,10 +58,10 @@ function flatten(value: string): string {
 
 function reviewBody(findings: Finding[]): string {
   const verdict = findings.length === 0 ? "CLEAN" : "FINDINGS";
-  const lines = ["## Security review", "", `**Verdict:** ${verdict}`];
+  const lines = ["## TINA rules review", "", `**Verdict:** ${verdict}`];
   for (const item of findings) {
     lines.push(
-      `- **${item.severity}** \`${flatten(item.file)}:${item.line}\` — ${flatten(item.title)}`,
+      `- **${item.severity}** · rule ${item.rule} · \`${flatten(item.file)}:${item.line}\` — ${flatten(item.title)}`,
     );
     lines.push(`  ${flatten(item.detail)}`);
   }

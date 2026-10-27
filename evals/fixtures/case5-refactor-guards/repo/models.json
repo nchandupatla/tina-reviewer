@@ -1,0 +1,7 @@
+{
+  "_note": "Prices are USD per 1M tokens (input / output), checked on OpenRouter 2026-10-23. Re-check before recording.",
+  "haiku":  { "id": "anthropic/claude-haiku-5.5",  "claude": "claude-haiku-5-5",  "in": 0.10, "out": 0.50 },
+  "sonnet": { "id": "anthropic/claude-sonnet-5.5", "claude": "claude-sonnet-5-5", "in": 2.00, "out": 10.00 },
+  "free":   { "id": "nvidia/nemotron-3-ultra-550b-a55b:free", "in": 0, "out": 0 },
+  "cheap":  { "id": "deepseek/deepseek-v4.1-flash", "in": 0.30, "out": 1.20 }
+}

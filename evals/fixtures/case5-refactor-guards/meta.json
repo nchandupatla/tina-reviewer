@@ -1,0 +1,4 @@
+{
+  "title": "Move the folder guards into sandbox() so plain mode is protected too",
+  "head": "b2beb211fb7258289deb2b470b2f469d6572b674"
+}

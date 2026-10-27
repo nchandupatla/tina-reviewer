@@ -1,0 +1,37 @@
+name: Bug report
+description: Something in TINA doesn't work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you ask TINA to do, and what went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. cd into an empty folder
+        2. tina "..."
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      placeholder: haiku / sonnet / free / anthropic/claude-haiku-5.5
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: macOS 15 · Node 22.11 · Docker 27.3
+  - type: textarea
+    id: transcript
+    attributes:
+      label: Transcript (optional)
+      description: The relevant lines from runs/<date>.jsonl. Remove anything private first.
+      render: json

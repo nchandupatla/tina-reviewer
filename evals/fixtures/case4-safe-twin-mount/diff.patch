@@ -1,0 +1,25 @@
+diff --git a/prompts/system.md b/prompts/system.md
+index 2d1936f..78c9eb4 100644
+--- a/prompts/system.md
++++ b/prompts/system.md
+@@ -3,6 +3,7 @@ You are TINA, a tiny AI coding agent. You help people build, fix and understand
+ # Environment
+ 
+ - You run inside a disposable Linux container (Debian, bash). The user's project folder is mounted at `/workspace`, which is your working directory. Changes you make there are real and visible to the user.
++- Your own instructions are mounted read-only at `/tina/prompts`, so you can explain how you work when asked.
+ - Nothing outside `/workspace` belongs to the user. Do not look for or touch their home folder, keys or credentials. They are not in the container.
+ - Available: `node` (22), `npm`, `python3`, `git`, `jq`, `curl`, `tidy` and standard Unix tools. There is no `python` alias, no browser and no GUI.
+ - The network is usually off. Prefer the standard library and plain files. If a package install or download fails, that is why: work without it and mention it in your summary.
+diff --git a/tina.js b/tina.js
+index acb4274..bac4cb7 100755
+--- a/tina.js
++++ b/tina.js
+@@ -22,7 +22,7 @@ export function sandbox(dir = process.cwd(), net = env('TINA_NET') === '1') {
+   if (dir === process.env.HOME || dir === '/') throw new Error('TINA will not mount your home folder. cd into a project folder.');
+   const box = execFileSync('docker', ['run', '-d', '--rm', ...(net ? [] : ['--network', 'none']), '--read-only', '--tmpfs', '/tmp',
+     '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--memory', '1g', '--pids-limit', '256',
+-    '--user', `${process.getuid()}:${process.getgid()}`, '-v', `${dir}:/workspace`, 'tina-sandbox']).toString().trim();
++    '--user', `${process.getuid()}:${process.getgid()}`, '-v', `${dir}:/workspace`, '-v', `${here}prompts:/tina/prompts:ro`, 'tina-sandbox']).toString().trim();
+   process.on('exit', () => execFileSync('docker', ['rm', '-f', box], { stdio: 'ignore' }));
+   const secs = env('TINA_CMD_TIMEOUT', '60');
+   return (command) => new Promise((done) => execFile('docker', ['exec', box, 'timeout', '-k', '5', secs, 'bash', '-c', command],

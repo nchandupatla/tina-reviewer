@@ -1,0 +1,42 @@
+diff --git a/test/tina.test.js b/test/tina.test.js
+index 2ca4ed4..4470b3b 100644
+--- a/test/tina.test.js
++++ b/test/tina.test.js
+@@ -180,4 +180,12 @@ describe('sandbox', { skip: !docker && 'Docker not available' }, () => {
+   test('refuses to mount the home folder', () => {
+     assert.throws(() => sandbox(homedir()), /home folder/);
+   });
++
++  test('refuses the home folder written with a trailing slash', () => {
++    assert.throws(() => sandbox(`${homedir()}/`), /home folder/);
++  });
++
++  test("refuses to mount TINA's own folder, where the .env lives", () => {
++    assert.throws(() => sandbox(new URL('..', import.meta.url).pathname), /own folder/);
++  });
+ });
+diff --git a/tina.js b/tina.js
+index acb4274..53bcf42 100755
+--- a/tina.js
++++ b/tina.js
+@@ -19,7 +19,7 @@ const TOOLS = [{ type: 'function', function: {
+ 
+ // HANDS: a throwaway Docker container. Only `dir` is mounted, and the API key never goes in.
+ export function sandbox(dir = process.cwd(), net = env('TINA_NET') === '1') {
+-  if (dir === process.env.HOME || dir === '/') throw new Error('TINA will not mount your home folder. cd into a project folder.');
++  if ([process.env.HOME, '/', here.slice(0, -1)].includes(dir.replace(/(.)\/+$/, '$1'))) throw new Error(`TINA will not mount ${dir}: it is your home folder, the root folder or TINA's own folder, where your .env lives. cd into a project folder.`);
+   const box = execFileSync('docker', ['run', '-d', '--rm', ...(net ? [] : ['--network', 'none']), '--read-only', '--tmpfs', '/tmp',
+     '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--memory', '1g', '--pids-limit', '256',
+     '--user', `${process.getuid()}:${process.getgid()}`, '-v', `${dir}:/workspace`, 'tina-sandbox']).toString().trim();
+diff --git a/ui.js b/ui.js
+index e5c2f72..4f54c5e 100755
+--- a/ui.js
++++ b/ui.js
+@@ -270,7 +270,6 @@ try {
+   }
+ }
+ 
+-if (dir === resolve(here)) bail("Don't run TINA inside its own folder: your .env (API key) would be visible to the model. cd into a project folder.");
+ if (existsSync(resolve(dir, '.env'))) console.log(c.red('! this folder has a .env file. TINA can read it, so any secrets in it are visible to the model.'));
+ 
+ let run;

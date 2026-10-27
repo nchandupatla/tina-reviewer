@@ -1,0 +1,17 @@
+name: Idea
+description: Suggest something TINA could do
+labels: [idea]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What should TINA do, and why would it help?
+    validations:
+      required: true
+  - type: checkboxes
+    id: tiny
+    attributes:
+      label: Keeping TINA tiny
+      options:
+        - label: I've thought about whether this belongs in tina.js (62-line limit) or in ui.js / a new file.

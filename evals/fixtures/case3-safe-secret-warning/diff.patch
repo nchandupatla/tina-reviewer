@@ -1,0 +1,16 @@
+diff --git a/ui.js b/ui.js
+index e5c2f72..ea4fd11 100755
+--- a/ui.js
++++ b/ui.js
+@@ -271,7 +271,10 @@ try {
+ }
+ 
+ if (dir === resolve(here)) bail("Don't run TINA inside its own folder: your .env (API key) would be visible to the model. cd into a project folder.");
+-if (existsSync(resolve(dir, '.env'))) console.log(c.red('! this folder has a .env file. TINA can read it, so any secrets in it are visible to the model.'));
++// Files that often hold API keys or tokens. Anything in the project folder is visible to the model.
++const SECRET_FILES = ['.env', '.env.local', '.npmrc', '.netrc', 'id_rsa', 'credentials.json'];
++const exposed = SECRET_FILES.filter((file) => existsSync(resolve(dir, file)));
++if (exposed.length) console.log(c.red(`! this folder has ${exposed.join(', ')}. TINA can read them, so any API keys or tokens in them are visible to the model.`));
+ 
+ let run;
+ try {

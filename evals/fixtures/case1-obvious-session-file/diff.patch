@@ -1,0 +1,16 @@
+diff --git a/ui.js b/ui.js
+index e5c2f72..0c617d9 100755
+--- a/ui.js
++++ b/ui.js
+@@ -280,6 +280,11 @@ try {
+   bail(err.message.split('\n')[0]);
+ }
+ 
++// Save this session's settings so a future `tina --resume` can pick up where it left off.
++mkdirSync(resolve(dir, '.tina'), { recursive: true });
++writeFileSync(resolve(dir, '.tina/session.json'), JSON.stringify({ model: process.env.TINA_MODEL ?? 'haiku',
++  baseUrl: process.env.TINA_BASE_URL, apiKey: process.env.TINA_API_KEY, log }, null, 2));
++
+ let messages = [{ role: 'system', content: SYSTEM }];
+ appendFileSync(log, JSON.stringify({ at: new Date().toISOString(), ...messages[0] }) + '\n');
+ 
