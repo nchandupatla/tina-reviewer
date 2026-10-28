@@ -1,6 +1,7 @@
 {
   "name": "tina-reviewer",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Reviews TINA pull requests against the rules in LESSONS.md.",
   "scripts": {
